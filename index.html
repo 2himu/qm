@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a1628">
+<title>কুরআন মাজীদ</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*{-webkit-box-sizing:border-box;box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#0a1628;font-family:'Hind Siliguri',sans-serif;color:#e8f0f7;font-size:15px;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+
+/* ===== CSS VARIABLES ===== */
+:root{
+  --bg-deep:#0a1628;
+  --bg-card:#11233d;
+  --bg-card2:#162d4a;
+  --bg-accent:#1a3a5c;
+  --gold:#c9a55a;
+  --gold-light:#e8c97a;
+  --teal:#3ecfb0;
+  --blue:#4da6e8;
+  --text-primary:#e8f0f7;
+  --text-muted:#6a90b0;
+  --text-gold:#c9a55a;
+  --border:#1e3d5c;
+  --nav-h:60px;
+  --header-h:56px;
+}
+
+/* ===== APP SHELL ===== */
+#app{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;background:var(--bg-deep)}
+.screen{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;display:none;-webkit-transform:translateX(100%);transform:translateX(100%);-webkit-transition:-webkit-transform 0.28s ease;transition:transform 0.28s ease}
+.screen.active{display:block;-webkit-transform:translateX(0);transform:translateX(0)}
+.screen.slide-out{display:block;-webkit-transform:translateX(-30%);transform:translateX(-30%)}
+.scroll-body{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + 16px)}
+
+/* ===== STATUS BAR ===== */
+.statusbar{height:22px;background:var(--bg-deep);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;padding:0 16px;font-size:11px;color:#8aaccc;-webkit-flex-shrink:0;flex-shrink:0}
+
+/* ===== HEADER ===== */
+.topbar{height:var(--header-h);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:0 16px;gap:12px;background:var(--bg-deep);border-bottom:1px solid var(--border);-webkit-flex-shrink:0;flex-shrink:0;position:relative;z-index:10}
+.topbar-title{font-size:17px;font-weight:700;color:var(--text-primary);-webkit-box-flex:1;-webkit-flex:1;flex:1}
+.topbar-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.back-btn{width:38px;height:38px;background:var(--bg-card);border-radius:10px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;border:1px solid var(--border);cursor:pointer;-webkit-flex-shrink:0;flex-shrink:0}
+.back-arrow{width:18px;height:18px;fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn{width:38px;height:38px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;cursor:pointer}
+
+/* ===== BOTTOM NAV ===== */
+.bottomnav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:#0d1e33;border-top:1px solid var(--border);display:-webkit-box;display:-webkit-flex;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
+.nav-tab{-webkit-box-flex:1;-webkit-flex:1;flex:1;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;gap:3px;cursor:pointer;-webkit-transition:opacity .2s;transition:opacity .2s}
+.nav-tab svg{width:22px;height:22px;fill:none;stroke:var(--text-muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;-webkit-transition:stroke .2s;transition:stroke .2s}
+.nav-tab span{font-size:9.5px;color:var(--text-muted);font-weight:500;-webkit-transition:color .2s;transition:color .2s}
+.nav-tab.active svg{stroke:var(--gold)}
+.nav-tab.active span{color:var(--gold)}
+.nav-dot{width:4px;height:4px;background:var(--gold);border-radius:50%;display:none;margin-top:-1px}
+.nav-tab.active .nav-dot{display:block}
+
+/* ===== HOME SCREEN ===== */
+.home-hero{position:relative;overflow:hidden;margin:12px 14px 0;border-radius:18px;height:175px}
+.hero-svg{width:100%;height:100%;display:block}
+.hero-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:end;-webkit-align-items:flex-end;align-items:flex-end;padding:14px 16px}
+.hero-greeting{font-size:11px;color:rgba(200,220,255,0.7);margin-bottom:4px}
+.hero-title{font-size:22px;font-weight:700;color:#fff}
+.hero-arabic{font-family:'Amiri Quran',serif;font-size:18px;color:var(--gold-light);text-align:right;line-height:1.5}
+
+/* Prayer time banner */
+.prayer-card{margin:12px 14px 0;background:linear-gradient(135deg,#132d4e,#1a4060);border-radius:16px;padding:14px 16px;border:1px solid #1e4d70;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center}
+.prayer-left{-webkit-box-flex:1;-webkit-flex:1;flex:1}
+.prayer-label{font-size:10px;color:#6aa0c0;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px}
+.prayer-name{font-size:18px;font-weight:700;color:#fff}
+.prayer-remaining{font-size:11px;color:#6aa0c0;margin-top:3px}
+.prayer-time-big{font-size:30px;font-weight:700;color:var(--teal);line-height:1}
+.prayer-ampm{font-size:12px;color:var(--text-muted);margin-top:3px;text-align:right}
+
+/* Prayer pills */
+.prayer-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 0;scrollbar-width:none}
+.prayer-scroll::-webkit-scrollbar{display:none}
+.prayer-pills{display:-webkit-box;display:-webkit-flex;display:flex;gap:7px;width:-webkit-max-content;width:max-content}
+.ppill{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:11px;color:var(--text-muted);cursor:pointer;white-space:nowrap;-webkit-transition:all .2s;transition:all .2s}
+.ppill.active{background:#132d4e;border-color:var(--blue);color:var(--blue)}
+
+/* Section */
+.sec-header{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;padding:16px 14px 8px}
+.sec-title{font-size:12px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.sec-more{font-size:11px;color:var(--blue)}
+
+/* Feature grid */
+.feat-grid{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:9px;padding:0 14px}
+.feat-card{-webkit-box-flex:0;-webkit-flex:0 0 calc(25% - 7px);flex:0 0 calc(25% - 7px);background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 6px 12px;text-align:center;cursor:pointer;-webkit-transition:background .15s;transition:background .15s}
+.feat-card:active{background:var(--bg-accent)}
+.feat-icon-wrap{width:40px;height:40px;border-radius:12px;margin:0 auto 8px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}
+.feat-icon-wrap svg{width:22px;height:22px}
+.feat-label{font-size:10px;color:var(--text-muted);font-weight:600;line-height:1.2}
+
+/* Last read */
+.last-read{margin:0 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;gap:12px}
+.last-read-icon{width:44px;height:44px;background:var(--bg-accent);border-radius:12px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-shrink:0;flex-shrink:0}
+.last-read-icon svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.last-read-info{-webkit-box-flex:1;-webkit-flex:1;flex:1}
+.last-read-top{font-size:10px;color:var(--text-muted);margin-bottom:3px}
+.last-read-surah{font-size:15px;font-weight:700;color:var(--text-primary)}
+.last-read-detail{font-size:11px;color:var(--text-muted);margin-top:2px}
+.last-read-arabic{font-family:'Amiri Quran',serif;font-size:18px;color:var(--gold);text-align:right;-webkit-flex-shrink:0;flex-shrink:0;line-height:1.4}
+
+/* ===== SURAH LIST ===== */
+.search-wrap{padding:10px 14px 6px}
+.search-box{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;gap:10px;padding:9px 14px}
+.search-box input{background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;-webkit-box-flex:1;-webkit-flex:1;flex:1;font-family:'Hind Siliguri',sans-serif}
+.search-box input::-webkit-input-placeholder{color:var(--text-muted)}
+.search-box svg{width:16px;height:16px;fill:none;stroke:var(--text-muted);stroke-width:2;stroke-linecap:round;-webkit-flex-shrink:0;flex-shrink:0}
+.tab-row{display:-webkit-box;display:-webkit-flex;display:flex;gap:6px;padding:6px 14px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tab-row::-webkit-scrollbar{display:none}
+.tab-pill{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--text-muted);cursor:pointer;white-space:nowrap;font-family:'Hind Siliguri',sans-serif;-webkit-transition:all .2s;transition:all .2s}
+.tab-pill.active{background:#132d4e;border-color:var(--blue);color:var(--blue)}
+.surah-item{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(30,61,92,0.4);cursor:pointer;-webkit-transition:background .15s;transition:background .15s;gap:12px}
+.surah-item:active{background:var(--bg-card)}
+.surah-num-box{width:36px;height:36px;background:var(--bg-card2);border-radius:8px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;font-size:12px;color:var(--blue);font-weight:700;-webkit-flex-shrink:0;flex-shrink:0}
+.surah-info{-webkit-box-flex:1;-webkit-flex:1;flex:1}
+.surah-name-bn{font-size:14px;font-weight:600;color:var(--text-primary)}
+.surah-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.surah-name-ar{font-family:'Amiri Quran',serif;font-size:19px;color:var(--gold);-webkit-flex-shrink:0;flex-shrink:0}
+
+/* ===== READER ===== */
+.reader-actions{display:-webkit-box;display:-webkit-flex;display:flex;gap:7px;padding:10px 14px;background:var(--bg-deep);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.reader-actions::-webkit-scrollbar{display:none}
+.act-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;color:var(--blue);white-space:nowrap;cursor:pointer;-webkit-flex-shrink:0;flex-shrink:0;font-family:'Hind Siliguri',sans-serif}
+.bismillah-wrap{text-align:center;padding:22px 20px 14px;border-bottom:1px solid rgba(30,61,92,0.4)}
+.bismillah-text{font-family:'Amiri Quran',serif;font-size:26px;color:var(--gold);line-height:2;direction:rtl}
+.bismillah-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
+.ayah-item{padding:16px 14px;border-bottom:1px solid rgba(30,61,92,0.35)}
+.ayah-arabic{font-family:'Amiri Quran',serif;font-size:23px;color:#e8d8a0;text-align:right;line-height:2.1;direction:rtl}
+.ayah-translation{font-size:13px;color:var(--blue);line-height:1.75;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(30,61,92,0.5)}
+.ayah-act-row{display:-webkit-box;display:-webkit-flex;display:flex;gap:7px;margin-top:10px}
+.ayah-mini-btn{background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:10px;color:var(--text-muted);cursor:pointer;font-family:'Hind Siliguri',sans-serif}
+
+/* ===== AUDIO ===== */
+.audio-hero{text-align:center;padding:20px 14px 0}
+.qari-avatar-big{width:90px;height:90px;border-radius:50%;background:var(--bg-accent);border:2px solid var(--gold);margin:0 auto 12px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;overflow:hidden}
+.qari-avatar-big svg{width:44px;height:44px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.qari-big-name{font-size:17px;font-weight:700;color:var(--text-primary)}
+.qari-big-sub{font-size:12px;color:var(--text-muted);margin-top:3px}
+.player-card{margin:14px;background:var(--bg-card);border-radius:18px;padding:18px;border:1px solid var(--border)}
+.player-title{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-bottom:14px}
+.player-surah{font-size:14px;font-weight:600;color:var(--text-primary)}
+.player-loop{font-size:11px;color:var(--teal)}
+.progress-wrap{background:var(--bg-deep);height:5px;border-radius:3px;cursor:pointer;position:relative;margin-bottom:8px}
+.progress-fill{height:100%;background:var(--gold);border-radius:3px;width:28%;-webkit-transition:width .3s linear;transition:width .3s linear}
+.progress-dot{position:absolute;top:-5px;width:14px;height:14px;background:var(--gold-light);border-radius:50%;left:28%;-webkit-transform:translateX(-50%);transform:translateX(-50%);-webkit-transition:left .3s linear;transition:left .3s linear}
+.time-row{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:14px}
+.controls{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;gap:16px}
+.ctrl{width:42px;height:42px;background:var(--bg-deep);border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;cursor:pointer;border:1px solid var(--border)}
+.ctrl svg{width:18px;height:18px;fill:none;stroke:var(--text-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ctrl-play{width:56px;height:56px;background:var(--gold);border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;cursor:pointer;border:none}
+.ctrl-play svg{width:22px;height:22px;fill:#fff;stroke:none}
+.extra-controls{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:space-around;-webkit-justify-content:space-around;justify-content:space-around;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.extra-ctrl{text-align:center;cursor:pointer}
+.extra-ctrl svg{width:20px;height:20px;fill:none;stroke:var(--text-muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;margin:0 auto 4px}
+.extra-ctrl span{font-size:10px;color:var(--text-muted)}
+.qari-row{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(30,61,92,0.35);cursor:pointer;gap:12px;-webkit-transition:background .15s;transition:background .15s}
+.qari-row:active{background:var(--bg-card)}
+.qari-av{width:44px;height:44px;border-radius:50%;background:var(--bg-accent);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-shrink:0;flex-shrink:0}
+.qari-av svg{width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.qari-r-name{font-size:14px;font-weight:600;color:var(--text-primary)}
+.qari-r-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.qari-check{font-size:14px;color:var(--teal);font-weight:700}
+
+/* ===== SETTINGS ===== */
+.settings-group{margin:12px 14px 0}
+.settings-group-title{font-size:10.5px;color:var(--text-muted);letter-spacing:1.1px;text-transform:uppercase;padding:0 2px 8px;font-weight:600}
+.sett-item{background:var(--bg-card);border-radius:12px;padding:13px 15px;margin-bottom:8px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;border:1px solid var(--border);cursor:pointer;gap:12px}
+.sett-left{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;gap:12px;-webkit-box-flex:1;-webkit-flex:1;flex:1}
+.sett-icon{width:36px;height:36px;border-radius:10px;background:var(--bg-accent);display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-shrink:0;flex-shrink:0}
+.sett-icon svg{width:18px;height:18px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sett-text{font-size:14px;color:var(--text-primary);font-weight:500}
+.sett-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.sett-val{font-size:12px;color:var(--blue)}
+.toggle-wrap{width:44px;height:25px;background:#1e3d5c;border-radius:13px;position:relative;cursor:pointer;-webkit-transition:background .25s;transition:background .25s;-webkit-flex-shrink:0;flex-shrink:0}
+.toggle-wrap.on{background:#2e7d52}
+.toggle-knob{width:19px;height:19px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;-webkit-transition:left .25s;transition:left .25s;-webkit-box-shadow:0 1px 3px rgba(0,0,0,.3);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle-wrap.on .toggle-knob{left:22px}
+
+/* ===== FONT SIZE CLASSES ===== */
+.fs-sm .ayah-arabic{font-size:20px}
+.fs-md .ayah-arabic{font-size:23px}
+.fs-lg .ayah-arabic{font-size:27px}
+.fs-xl .ayah-arabic{font-size:31px}
+
+/* ===== TABLET ===== */
+@media (min-width:600px){
+  .feat-card{-webkit-flex:0 0 calc(12.5% - 8px);flex:0 0 calc(12.5% - 8px)}
+  .home-hero{height:210px}
+  .player-card{margin:16px 80px}
+  .audio-hero{padding-top:24px}
+  .qari-avatar-big{width:110px;height:110px}
+  .qari-big-name{font-size:20px}
+  .surah-item{padding:14px 20px}
+  .ayah-item{padding:18px 20px}
+  .bismillah-text{font-size:30px}
+  .ayah-arabic{font-size:26px}
+}
+@media (min-width:900px){
+  #app{max-width:480px;margin:0 auto;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  body{background:#060f1d}
+  .bottomnav{left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);max-width:480px}
+}
+
+/* ===== LOADING SPLASH ===== */
+#splash{position:fixed;top:0;left:0;right:0;bottom:0;background:#0a1628;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;flex-direction:column;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;z-index:999}
+.splash-icon{width:80px;height:80px;background:linear-gradient(145deg,#1a3a5c,#0f2236);border-radius:22px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;margin-bottom:20px;border:2px solid var(--gold)}
+.splash-icon svg{width:44px;height:44px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.splash-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:6px}
+.splash-sub{font-family:'Amiri Quran',serif;font-size:20px;color:var(--gold);margin-bottom:28px}
+.splash-bar{width:140px;height:3px;background:#162840;border-radius:2px;overflow:hidden}
+.splash-prog{height:100%;background:var(--gold);width:0%;border-radius:2px;-webkit-animation:splashLoad 1.8s ease forwards;animation:splashLoad 1.8s ease forwards}
+@-webkit-keyframes splashLoad{0%{width:0}70%{width:80%}100%{width:100%}}
+@keyframes splashLoad{0%{width:0}70%{width:80%}100%{width:100%}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-icon">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+  </div>
+  <div class="splash-title">কুরআন মাজীদ</div>
+  <div class="splash-sub">القرآن المجيد</div>
+  <div class="splash-bar"><div class="splash-prog"></div></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- ========== HOME ========== -->
+<div id="s-home" class="screen active">
+  <div class="statusbar">
+    <span id="clock-time">৯:৪১</span>
+    <span style="display:-webkit-box;display:-webkit-flex;display:flex;gap:8px;-webkit-box-align:center;-webkit-align-items:center;align-items:center">
+      <svg width="15" height="11" viewBox="0 0 15 11"><rect x="0" y="3" width="3" height="8" rx="1" fill="#8aaccc" opacity=".4"/><rect x="4" y="2" width="3" height="9" rx="1" fill="#8aaccc" opacity=".6"/><rect x="8" y="1" width="3" height="10" rx="1" fill="#8aaccc" opacity=".8"/><rect x="12" y="0" width="3" height="11" rx="1" fill="#8aaccc"/></svg>
+      <svg width="14" height="10" viewBox="0 0 14 10"><path d="M7 2C4.8 2 2.8 2.9 1.4 4.4L0 3C1.8 1.1 4.3 0 7 0s5.2 1.1 7 3L12.6 4.4C11.2 2.9 9.2 2 7 2z" fill="#8aaccc"/><path d="M7 5.5c-1.3 0-2.5.5-3.3 1.4L2.3 5.5C3.5 4.2 5.2 3.5 7 3.5s3.5.7 4.7 2L10.3 6.9C9.5 6 8.3 5.5 7 5.5z" fill="#8aaccc"/><circle cx="7" cy="9" r="1.5" fill="#8aaccc"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11"><rect x="0" y="1" width="18" height="9" rx="2" fill="none" stroke="#8aaccc" stroke-width="1"/><rect x="1.5" y="2.5" width="11" height="6" rx="1" fill="#8aaccc"/><path d="M19 3.5v4c1.1-.5 1.8-1.2 1.8-2s-.7-1.5-1.8-2z" fill="#8aaccc" opacity=".6"/></svg>
+    </span>
+  </div>
+  <div class="scroll-body" style="height:calc(100% - 22px);overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+    <!-- Greeting -->
+    <div style="display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:12px 14px 8px">
+      <div>
+        <div style="font-size:12px;color:var(--text-muted)" id="greeting-txt">আস-সালামু আলাইকুম</div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-top:2px">কুরআন মাজীদ</div>
+      </div>
+      <div style="width:38px;height:38px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;cursor:pointer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8aaccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+    </div>
+
+    <!-- Hero Mosque -->
+    <div class="home-hero">
+      <svg viewBox="0 0 360 175" xmlns="http://www.w3.org/2000/svg" class="hero-svg">
+        <defs>
+          <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d1e3a"/><stop offset="100%" stop-color="#0a1628"/></linearGradient>
+          <radialGradient id="moonGlow" cx="75%" cy="20%" r="15%"><stop offset="0%" stop-color="#f5d97a" stop-opacity=".25"/><stop offset="100%" stop-color="#f5d97a" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="360" height="175" fill="url(#sky1)" rx="18"/>
+        <rect width="360" height="175" fill="url(#moonGlow)"/>
+        <!-- Stars -->
+        <circle cx="30" cy="18" r="1.2" fill="#fff" opacity=".6"/><circle cx="80" cy="10" r=".8" fill="#fff" opacity=".5"/><circle cx="140" cy="14" r="1" fill="#fff" opacity=".7"/><circle cx="190" cy="8" r=".9" fill="#fff" opacity=".4"/><circle cx="240" cy="18" r="1.1" fill="#fff" opacity=".6"/><circle cx="330" cy="12" r=".8" fill="#fff" opacity=".5"/><circle cx="60" cy="30" r=".7" fill="#fff" opacity=".3"/><circle cx="310" cy="25" r="1" fill="#fff" opacity=".4"/>
+        <!-- Moon -->
+        <circle cx="278" cy="26" r="16" fill="#f5d97a" opacity=".9"/>
+        <circle cx="285" cy="21" r="13" fill="#0d1e3a"/>
+        <!-- Star near moon -->
+        <polygon points="300,15 301.3,19 305.5,19 302.1,21.5 303.5,25.5 300,23 296.5,25.5 297.9,21.5 294.5,19 298.7,19" fill="#f5d97a" opacity=".8" transform="scale(0.5) translate(300,14)"/>
+        <!-- Ground -->
+        <rect x="0" y="148" width="360" height="27" fill="#0a1628"/>
+        <!-- Left wing minarets -->
+        <rect x="40" y="75" width="14" height="75" rx="2" fill="#11233d"/>
+        <path d="M40 75 Q47 52 54 75" fill="#162d4a"/>
+        <line x1="47" y1="52" x2="47" y2="40" stroke="#c9a55a" stroke-width="1.5"/>
+        <circle cx="47" cy="40" r="2.5" fill="#c9a55a"/>
+        <!-- Right wing minarets -->
+        <rect x="306" y="75" width="14" height="75" rx="2" fill="#11233d"/>
+        <path d="M306 75 Q313 52 320 75" fill="#162d4a"/>
+        <line x1="313" y1="52" x2="313" y2="40" stroke="#c9a55a" stroke-width="1.5"/>
+        <circle cx="313" cy="40" r="2.5" fill="#c9a55a"/>
+        <!-- Side minarets -->
+        <rect x="110" y="90" width="12" height="60" rx="2" fill="#132d4e"/>
+        <path d="M110 90 Q116 70 122 90" fill="#1a3a5c"/>
+        <line x1="116" y1="70" x2="116" y2="60" stroke="#c9a55a" stroke-width="1.2"/>
+        <rect x="238" y="90" width="12" height="60" rx="2" fill="#132d4e"/>
+        <path d="M238 90 Q244 70 250 90" fill="#1a3a5c"/>
+        <line x1="244" y1="70" x2="244" y2="60" stroke="#c9a55a" stroke-width="1.2"/>
+        <!-- Main building -->
+        <rect x="90" y="100" width="180" height="50" rx="2" fill="#11233d"/>
+        <!-- Main dome -->
+        <ellipse cx="180" cy="95" rx="52" ry="44" fill="#132d4e"/>
+        <path d="M128 95 Q180 42 232 95" fill="#1a3a5c"/>
+        <!-- Dome finial -->
+        <line x1="180" y1="42" x2="180" y2="28" stroke="#c9a55a" stroke-width="2"/>
+        <path d="M175 28 Q180 18 185 28" fill="#c9a55a"/>
+        <!-- Dome window -->
+        <path d="M170 80 Q180 68 190 80" fill="#3ecfb0" opacity=".2"/>
+        <rect x="170" y="80" width="20" height="16" rx="2" fill="#3ecfb0" opacity=".1"/>
+        <!-- Arched windows -->
+        <path d="M145 115 Q152 108 159 115" fill="#1a3a5c"/><rect x="145" y="115" width="14" height="14" rx="1" fill="#162d4a"/>
+        <path d="M173 115 Q180 108 187 115" fill="#1a3a5c"/><rect x="173" y="115" width="14" height="14" rx="1" fill="#162d4a"/>
+        <path d="M201 115 Q208 108 215 115" fill="#1a3a5c"/><rect x="201" y="115" width="14" height="14" rx="1" fill="#162d4a"/>
+        <!-- Side domes -->
+        <ellipse cx="130" cy="100" rx="22" ry="18" fill="#132d4e"/>
+        <path d="M108 100 Q130 74 152 100" fill="#162d4a"/>
+        <ellipse cx="230" cy="100" rx="22" ry="18" fill="#132d4e"/>
+        <path d="M208 100 Q230 74 252 100" fill="#162d4a"/>
+      </svg>
+      <div class="hero-overlay">
+        <div>
+          <div class="hero-greeting" id="hijri-date">১৫ শাওয়াল ১৪৪৬</div>
+          <div class="hero-title" id="today-date">রবিবার, ২০ এপ্রিল</div>
+        </div>
+        <div class="hero-arabic">بِسْمِ اللَّهِ</div>
+      </div>
+    </div>
+
+    <!-- Prayer Banner -->
+    <div class="prayer-card">
+      <div class="prayer-left">
+        <div class="prayer-label">পরবর্তী নামাজ</div>
+        <div class="prayer-name" id="next-prayer">যোহর</div>
+        <div class="prayer-remaining" id="prayer-remaining">২ ঘন্টা ১৮ মিনিট বাকি</div>
+      </div>
+      <div style="text-align:right">
+        <div class="prayer-time-big" id="next-prayer-time">১২:৩০</div>
+        <div class="prayer-ampm">PM</div>
+      </div>
+    </div>
+
+    <!-- Prayer Times Scroll -->
+    <div class="prayer-scroll">
+      <div class="prayer-pills">
+        <div class="ppill">ফজর ৫:১০</div>
+        <div class="ppill">যোহর ১২:৩০</div>
+        <div class="ppill active">আসর ৪:০০</div>
+        <div class="ppill">মাগরিব ৬:২৮</div>
+        <div class="ppill">ইশা ৭:৫০</div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="sec-header"><div class="sec-title">ফিচার</div></div>
+    <div class="feat-grid">
+      <div class="feat-card" onclick="nav('s-quran')">
+        <div class="feat-icon-wrap" style="background:rgba(201,165,90,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="feat-label">কুরআন</div>
+      </div>
+      <div class="feat-card" onclick="nav('s-audio')">
+        <div class="feat-icon-wrap" style="background:rgba(62,207,176,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3ecfb0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+        <div class="feat-label">তেলাওয়াত</div>
+      </div>
+      <div class="feat-card" onclick="alert('শীঘ্রই আসছে')">
+        <div class="feat-icon-wrap" style="background:rgba(77,166,232,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4da6e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="feat-label">নামাজ</div>
+      </div>
+      <div class="feat-card" onclick="alert('শীঘ্রই আসছে')">
+        <div class="feat-icon-wrap" style="background:rgba(201,165,90,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 12h3M18 12h3M12 3v3M12 18v3"/><path d="M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+        </div>
+        <div class="feat-label">কিবলা</div>
+      </div>
+      <div class="feat-card" onclick="alert('শীঘ্রই আসছে')">
+        <div class="feat-icon-wrap" style="background:rgba(62,207,176,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3ecfb0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6M12 16h.01"/></svg>
+        </div>
+        <div class="feat-label">দোয়া</div>
+      </div>
+      <div class="feat-card" onclick="alert('শীঘ্রই আসছে')">
+        <div class="feat-icon-wrap" style="background:rgba(77,166,232,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4da6e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div class="feat-label">হাদিস</div>
+      </div>
+      <div class="feat-card" onclick="alert('শীঘ্রই আসছে')">
+        <div class="feat-icon-wrap" style="background:rgba(201,165,90,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <div class="feat-label">তাসবিহ</div>
+      </div>
+      <div class="feat-card" onclick="nav('s-settings')">
+        <div class="feat-icon-wrap" style="background:rgba(77,166,232,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4da6e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="feat-label">সেটিংস</div>
+      </div>
+    </div>
+
+    <!-- Last Read -->
+    <div class="sec-header"><div class="sec-title">শেষ পড়া</div><div class="sec-more">সব দেখুন</div></div>
+    <div class="last-read" onclick="nav('s-reader')">
+      <div class="last-read-icon">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="last-read-info">
+        <div class="last-read-top">আপনি শেষবার পড়েছিলেন</div>
+        <div class="last-read-surah">সূরা আল-বাকারা</div>
+        <div class="last-read-detail">আয়াত ২৫৫ • জুজ ৩</div>
+      </div>
+      <div class="last-read-arabic">آيَةُ الْكُرْسِيِّ</div>
+    </div>
+
+    <!-- Surah List Preview -->
+    <div class="sec-header"><div class="sec-title">সূরার তালিকা</div><div class="sec-more" onclick="nav('s-quran')">সব দেখুন →</div></div>
+    <div id="home-surah-preview"></div>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- ========== QURAN LIST ========== -->
+<div id="s-quran" class="screen">
+  <div class="statusbar"><span id="clock2">৯:৪১</span><span style="font-size:10px;color:#8aaccc">&#9679;&#9679;&#9679;</span></div>
+  <div class="topbar">
+    <div class="back-btn" onclick="back()">
+      <svg class="back-arrow" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div>
+      <div class="topbar-title">কুরআনুল কারীম</div>
+      <div class="topbar-sub">১১৪টি সূরা</div>
+    </div>
+    <div class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8aaccc" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="surah-search" placeholder="সূরা বা আয়াত খুঁজুন..." oninput="filterSurah(this.value)">
+    </div>
+  </div>
+  <div class="tab-row">
+    <div class="tab-pill active" onclick="switchTab(this,'surah')">সূরা</div>
+    <div class="tab-pill" onclick="switchTab(this,'juz')">জুজ</div>
+    <div class="tab-pill" onclick="switchTab(this,'page')">পৃষ্ঠা</div>
+    <div class="tab-pill" onclick="switchTab(this,'bookmark')">বুকমার্ক</div>
+  </div>
+  <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;height:calc(100% - 22px - 56px - 58px - 50px - 60px)" id="surah-list-wrap">
+    <div id="full-surah-list"></div>
+  </div>
+</div>
+
+<!-- ========== READER ========== -->
+<div id="s-reader" class="screen">
+  <div class="statusbar"><span>৯:৪১</span><span style="font-size:10px;color:#8aaccc">&#9679;&#9679;&#9679;</span></div>
+  <div class="topbar">
+    <div class="back-btn" onclick="back()">
+      <svg class="back-arrow" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div>
+      <div class="topbar-title" id="reader-title">সূরা আল-ফাতিহা</div>
+      <div class="topbar-sub" id="reader-sub">৭ আয়াত • মক্কী • জুজ ১</div>
+    </div>
+    <div style="font-family:'Amiri Quran',serif;font-size:18px;color:var(--gold);" id="reader-arabic">الفاتحة</div>
+  </div>
+  <div class="reader-actions">
+    <div class="act-chip" onclick="nav('s-audio')">&#127925; অডিও</div>
+    <div class="act-chip">&#128278; বুকমার্ক</div>
+    <div class="act-chip" id="fs-chip" onclick="cycleFont()">ফন্ট: মাঝারি</div>
+    <div class="act-chip">অনুবাদ</div>
+    <div class="act-chip">তাফসীর</div>
+    <div class="act-chip">শেয়ার</div>
+  </div>
+  <div id="reader-body" class="fs-md" style="overflow-y:auto;-webkit-overflow-scrolling:touch;height:calc(100% - 22px - 56px - 46px - 60px)">
+    <div class="bismillah-wrap">
+      <div class="bismillah-text">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="bismillah-sub">পরম করুণাময়, অতি দয়ালু আল্লাহর নামে</div>
+    </div>
+    <div id="ayah-list"></div>
+  </div>
+</div>
+
+<!-- ========== AUDIO ========== -->
+<div id="s-audio" class="screen">
+  <div class="statusbar"><span>৯:৪১</span><span style="font-size:10px;color:#8aaccc">&#9679;&#9679;&#9679;</span></div>
+  <div class="topbar">
+    <div class="back-btn" onclick="back()">
+      <svg class="back-arrow" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="topbar-title">তেলাওয়াত</div>
+  </div>
+  <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;height:calc(100% - 22px - 56px - 60px)">
+    <div class="audio-hero">
+      <div class="qari-avatar-big">
+        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <div class="qari-big-name" id="cur-qari">Mishary Rashid Alafasy</div>
+      <div class="qari-big-sub" id="cur-surah-audio">সূরা আল-ফাতিহা • মুরাত্তাল</div>
+    </div>
+    <div class="player-card">
+      <div class="player-title">
+        <div class="player-surah">Al-Fatihah</div>
+        <div class="player-loop">&#8734; রিপিট</div>
+      </div>
+      <div class="progress-wrap" id="audio-prog" onclick="seekAudio(event)">
+        <div class="progress-fill" id="prog-fill"></div>
+        <div class="progress-dot" id="prog-dot"></div>
+      </div>
+      <div class="time-row">
+        <span id="cur-t">0:00</span>
+        <span>0:50</span>
+      </div>
+      <div class="controls">
+        <div class="ctrl"><svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></div>
+        <div class="ctrl"><svg viewBox="0 0 24 24"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg></div>
+        <div class="ctrl-play" id="play-btn" onclick="togglePlay()">
+          <svg id="play-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="#fff"/></svg>
+        </div>
+        <div class="ctrl"><svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div>
+        <div class="ctrl"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></div>
+      </div>
+      <div class="extra-controls">
+        <div class="extra-ctrl">
+          <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+          <span>শাফল</span>
+        </div>
+        <div class="extra-ctrl">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>ডাউনলোড</span>
+        </div>
+        <div class="extra-ctrl">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span>সেভ</span>
+        </div>
+        <div class="extra-ctrl">
+          <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>শেয়ার</span>
+        </div>
+      </div>
+    </div>
+    <div class="sec-header" style="padding-left:14px"><div class="sec-title">ক্বারি নির্বাচন</div></div>
+    <div id="qari-list"></div>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS ========== -->
+<div id="s-settings" class="screen">
+  <div class="statusbar"><span>৯:৪১</span><span style="font-size:10px;color:#8aaccc">&#9679;&#9679;&#9679;</span></div>
+  <div class="topbar">
+    <div class="back-btn" onclick="back()">
+      <svg class="back-arrow" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="topbar-title">সেটিংস</div>
+  </div>
+  <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;height:calc(100% - 22px - 56px - 60px)">
+    <div class="settings-group">
+      <div class="settings-group-title">পাঠ সেটিং</div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+          <div><div class="sett-text">আরবি ফন্ট</div><div class="sett-sub">Uthmanic Hafs v22</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item" onclick="cycleFont()">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div>
+          <div><div class="sett-text">ফন্ট সাইজ</div><div class="sett-sub" id="fs-setting-sub">মাঝারি</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div><div class="sett-text">অনুবাদ ভাষা</div><div class="sett-sub">বাংলা</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+          <div><div class="sett-text">তাজওয়িদ রঙ</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div><div class="sett-text">আয়াত নম্বর দেখাও</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">অডিও সেটিং</div>
+      <div class="sett-item" onclick="nav('s-audio')">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
+          <div><div class="sett-text">ডিফল্ট ক্বারি</div><div class="sett-sub">Mishary Alafasy</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+          <div><div class="sett-text">আয়াত রিপিট</div></div>
+        </div>
+        <div class="toggle-wrap" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div><div class="sett-text">অটো প্লে</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">নোটিফিকেশন</div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div><div class="sett-text">নামাজের অ্যালার্ম</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div><div class="sett-text">দৈনিক আয়াত রিমাইন্ডার</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">ডিসপ্লে</div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+          <div><div class="sett-text">ডার্ক মোড</div></div>
+        </div>
+        <div class="toggle-wrap on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+          <div><div class="sett-text">স্ক্রিন সবসময় চালু</div></div>
+        </div>
+        <div class="toggle-wrap" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">অ্যাপ সম্পর্কে</div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div><div class="sett-text">ভার্সন</div><div class="sett-sub">v2.1.0</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></div>
+          <div><div class="sett-text">রেটিং দিন</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+      <div class="sett-item">
+        <div class="sett-left">
+          <div class="sett-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div><div class="sett-text">শেয়ার করুন</div></div>
+        </div>
+        <div class="sett-val">›</div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <div class="nav-tab active" id="nav-home" onclick="nav('s-home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>হোম</span>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-tab" id="nav-quran" onclick="nav('s-quran')">
+    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    <span>কুরআন</span>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-tab" id="nav-audio" onclick="nav('s-audio')">
+    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <span>তেলাওয়াত</span>
+    <div class="nav-dot"></div>
+  </div>
+  <div class="nav-tab" id="nav-settings" onclick="nav('s-settings')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>সেটিংস</span>
+    <div class="nav-dot"></div>
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<script>
+/* ===== DATA ===== */
+var surahs=[
+  {n:1,bn:'আল-ফাতিহা',ar:'الفاتحة',ay:7,t:'মক্কী',j:1},
+  {n:2,bn:'আল-বাকারা',ar:'البقرة',ay:286,t:'মদনী',j:1},
+  {n:3,bn:'আল-ইমরান',ar:'آل عمران',ay:200,t:'মদনী',j:3},
+  {n:4,bn:'আন-নিসা',ar:'النساء',ay:176,t:'মদনী',j:4},
+  {n:5,bn:'আল-মায়িদা',ar:'المائدة',ay:120,t:'মদনী',j:6},
+  {n:6,bn:'আল-আনআম',ar:'الأنعام',ay:165,t:'মক্কী',j:7},
+  {n:7,bn:'আল-আরাফ',ar:'الأعراف',ay:206,t:'মক্কী',j:8},
+  {n:8,bn:'আল-আনফাল',ar:'الأنفال',ay:75,t:'মদনী',j:9},
+  {n:9,bn:'আত-তাওবা',ar:'التوبة',ay:129,t:'মদনী',j:10},
+  {n:10,bn:'ইউনুস',ar:'يونس',ay:109,t:'মক্কী',j:11},
+  {n:11,bn:'হুদ',ar:'هود',ay:123,t:'মক্কী',j:11},
+  {n:12,bn:'ইউসুফ',ar:'يوسف',ay:111,t:'মক্কী',j:12},
+  {n:13,bn:'আর-রাদ',ar:'الرعد',ay:43,t:'মদনী',j:13},
+  {n:14,bn:'ইবরাহিম',ar:'إبراهيم',ay:52,t:'মক্কী',j:13},
+  {n:15,bn:'আল-হিজর',ar:'الحجر',ay:99,t:'মক্কী',j:14},
+  {n:16,bn:'আন-নাহল',ar:'النحل',ay:128,t:'মক্কী',j:14},
+  {n:17,bn:'আল-ইসরা',ar:'الإسراء',ay:111,t:'মক্কী',j:15},
+  {n:18,bn:'আল-কাহফ',ar:'الكهف',ay:110,t:'মক্কী',j:15},
+  {n:19,bn:'মারইয়াম',ar:'مريم',ay:98,t:'মক্কী',j:16},
+  {n:20,bn:'তা-হা',ar:'طه',ay:135,t:'মক্কী',j:16},
+  {n:36,bn:'ইয়াসীন',ar:'يس',ay:83,t:'মক্কী',j:22},
+  {n:55,bn:'আর-রহমান',ar:'الرحمن',ay:78,t:'মদনী',j:27},
+  {n:67,bn:'আল-মুলক',ar:'الملك',ay:30,t:'মক্কী',j:29},
+  {n:78,bn:'আন-নাবা',ar:'النبأ',ay:40,t:'মক্কী',j:30},
+  {n:112,bn:'আল-ইখলাস',ar:'الإخلاص',ay:4,t:'মক্কী',j:30},
+  {n:113,bn:'আল-ফালাক',ar:'الفلق',ay:5,t:'মক্কী',j:30},
+  {n:114,bn:'আন-নাস',ar:'الناس',ay:6,t:'মক্কী',j:30}
+];
+
+var ayahs=[
+  {ar:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿١﴾',bn:'সমস্ত প্রশংসা আল্লাহর জন্য, যিনি জগতসমূহের রব।'},
+  {ar:'الرَّحْمَنِ الرَّحِيمِ ﴿٢﴾',bn:'পরম করুণাময়, অতি দয়ালু।'},
+  {ar:'مَالِكِ يَوْمِ الدِّينِ ﴿٣﴾',bn:'বিচার দিনের মালিক।'},
+  {ar:'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٤﴾',bn:'আমরা শুধু আপনারই ইবাদত করি এবং শুধু আপনার কাছেই সাহায্য চাই।'},
+  {ar:'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٥﴾',bn:'আমাদেরকে সরল পথ দেখান।'},
+  {ar:'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ ﴿٦﴾',bn:'তাদের পথ, যাদের উপর আপনি নেয়ামত দিয়েছেন।'},
+  {ar:'غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾',bn:'তাদের পথ নয় যাদের উপর আপনি ক্রোধ করেছেন এবং যারা পথভ্রষ্ট হয়েছে।'}
+];
+
+var qaris=[
+  {name:'Mishary Rashid Alafasy',style:'Murattal',country:'কুয়েত'},
+  {name:'Abdul Baset [Mujawwad]',style:'Mujawwad',country:'মিশর'},
+  {name:'Abdul Baset [Murattal]',style:'Murattal',country:'মিশর'},
+  {name:'Abdur-Rahman as-Sudais',style:'Murattal',country:'সৌদি আরব'},
+  {name:'Maher al-Muaiqly',style:'Murattal',country:'সৌদি আরব'},
+  {name:'Abu Bakr al-Shatri',style:'Murattal',country:'সৌদি আরব'},
+  {name:'Saad al-Ghamdi',style:'Murattal',country:'সৌদি আরব'},
+  {name:'Khaleel Al-Husary',style:'Murattal',country:'মিশর'},
+  {name:'Nasser Al Qatami',style:'Murattal',country:'সৌদি আরব'},
+  {name:'Muhammad Ayyoob',style:'Murattal',country:'সৌদি আরব'}
+];
+
+/* ===== NAVIGATION ===== */
+var history=[];
+var current='s-home';
+var fsStates=['sm','md','lg','xl'];
+var fsLabels=['ছোট','মাঝারি','বড়','অতি বড়'];
+var fsIdx=1;
+
+function nav(id){
+  if(id===current)return;
+  var from=document.getElementById(current);
+  var to=document.getElementById(id);
+  history.push(current);
+  current=id;
+  from.classList.add('slide-out');
+  to.style.display='block';
+  setTimeout(function(){to.classList.add('active');},10);
+  setTimeout(function(){from.classList.remove('active','slide-out');from.style.display='none';},300);
+  // update nav
+  ['home','quran','audio','settings'].forEach(function(k){
+    var el=document.getElementById('nav-'+k);
+    if(el)el.classList.remove('active');
+  });
+  var map={'s-home':'home','s-quran':'quran','s-reader':'quran','s-audio':'audio','s-settings':'settings'};
+  var navKey=map[id];
+  if(navKey){var el=document.getElementById('nav-'+navKey);if(el)el.classList.add('active');}
+}
+
+function back(){
+  if(history.length===0){nav('s-home');return;}
+  var prev=history.pop();
+  var from=document.getElementById(current);
+  var to=document.getElementById(prev);
+  current=prev;
+  to.style.display='block';
+  setTimeout(function(){
+    to.classList.add('active');
+    from.classList.remove('active');
+    from.style.display='none';
+  },10);
+  ['home','quran','audio','settings'].forEach(function(k){
+    var el=document.getElementById('nav-'+k);if(el)el.classList.remove('active');
+  });
+  var map={'s-home':'home','s-quran':'quran','s-reader':'quran','s-audio':'audio','s-settings':'settings'};
+  var navKey=map[prev];
+  if(navKey){var el=document.getElementById('nav-'+navKey);if(el)el.classList.add('active');}
+}
+
+/* ===== BUILD UI ===== */
+function buildHomeSurahPreview(){
+  var el=document.getElementById('home-surah-preview');
+  var html='';
+  for(var i=0;i<6;i++){
+    var s=surahs[i];
+    html+='<div class="surah-item" onclick="openSurah('+i+')">'
+      +'<div class="surah-num-box">'+s.n+'</div>'
+      +'<div class="surah-info"><div class="surah-name-bn">'+s.bn+'</div>'
+      +'<div class="surah-meta">'+s.ay+' আয়াত • '+s.t+'</div></div>'
+      +'<div class="surah-name-ar">'+s.ar+'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function buildFullSurahList(){
+  var el=document.getElementById('full-surah-list');
+  renderSurahList(el,surahs);
+}
+
+function renderSurahList(el,list){
+  var html='';
+  for(var i=0;i<list.length;i++){
+    var s=list[i];
+    html+='<div class="surah-item" onclick="openSurahByNum('+s.n+')">'
+      +'<div class="surah-num-box">'+s.n+'</div>'
+      +'<div class="surah-info"><div class="surah-name-bn">'+s.bn+'</div>'
+      +'<div class="surah-meta">'+s.ay+' আয়াত • '+s.t+' • জুজ '+s.j+'</div></div>'
+      +'<div class="surah-name-ar">'+s.ar+'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function filterSurah(q){
+  var el=document.getElementById('full-surah-list');
+  if(!q){renderSurahList(el,surahs);return;}
+  q=q.toLowerCase();
+  var filtered=surahs.filter(function(s){return s.bn.indexOf(q)>-1||s.ar.indexOf(q)>-1||String(s.n)===q;});
+  renderSurahList(el,filtered);
+}
+
+function switchTab(el,type){
+  document.querySelectorAll('.tab-pill').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+}
+
+function openSurah(idx){
+  var s=surahs[idx];
+  document.getElementById('reader-title').textContent='সূরা '+s.bn;
+  document.getElementById('reader-sub').textContent=s.ay+' আয়াত • '+s.t+' • জুজ '+s.j;
+  document.getElementById('reader-arabic').textContent=s.ar;
+  buildAyahList();
+  nav('s-reader');
+}
+
+function openSurahByNum(n){
+  for(var i=0;i<surahs.length;i++){if(surahs[i].n===n){openSurah(i);return;}}
+}
+
+function buildAyahList(){
+  var el=document.getElementById('ayah-list');
+  var html='';
+  for(var i=0;i<ayahs.length;i++){
+    var a=ayahs[i];
+    html+='<div class="ayah-item">'
+      +'<div class="ayah-arabic">'+a.ar+'</div>'
+      +'<div class="ayah-translation">'+a.bn+'</div>'
+      +'<div class="ayah-act-row">'
+      +'<div class="ayah-mini-btn">&#128278;</div>'
+      +'<div class="ayah-mini-btn">&#128203; কপি</div>'
+      +'<div class="ayah-mini-btn">&#128266; শুনুন</div>'
+      +'<div class="ayah-mini-btn">&#8599; শেয়ার</div>'
+      +'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function buildQariList(){
+  var el=document.getElementById('qari-list');
+  var html='';
+  for(var i=0;i<qaris.length;i++){
+    var q=qaris[i];
+    html+='<div class="qari-row" onclick="selectQari(this,\''+q.name+'\')">'
+      +'<div class="qari-av"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a55a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></div>'
+      +'<div style="flex:1"><div class="qari-r-name">'+q.name+'</div><div class="qari-r-sub">'+q.style+' • '+q.country+'</div></div>'
+      +'<div class="qari-check">'+(i===0?'✓':'')+'</div>'
+      +'</div>';
+  }
+  el.innerHTML=html;
+}
+
+function selectQari(row,name){
+  document.querySelectorAll('.qari-check').forEach(function(c){c.textContent='';});
+  row.querySelector('.qari-check').textContent='✓';
+  document.getElementById('cur-qari').textContent=name;
+}
+
+/* ===== AUDIO PLAYER ===== */
+var playing=false, prog=0, timer=null;
+
+function togglePlay(){
+  playing=!playing;
+  var icon=document.getElementById('play-icon');
+  if(playing){
+    icon.innerHTML='<rect x="6" y="4" width="4" height="16" fill="#fff"/><rect x="14" y="4" width="4" height="16" fill="#fff"/>';
+    timer=setInterval(function(){
+      prog=Math.min(prog+0.4,100);
+      updateProgress(prog);
+      if(prog>=100){clearInterval(timer);playing=false;prog=0;
+        document.getElementById('play-icon').innerHTML='<polygon points="5 3 19 12 5 21 5 3" fill="#fff"/>';
+      }
+    },200);
+  }else{
+    clearInterval(timer);
+    icon.innerHTML='<polygon points="5 3 19 12 5 21 5 3" fill="#fff"/>';
+  }
+}
+
+function updateProgress(p){
+  var pct=p+'%';
+  document.getElementById('prog-fill').style.width=pct;
+  document.getElementById('prog-dot').style.left=pct;
+  var s=Math.round(p*0.5);
+  document.getElementById('cur-t').textContent='0:'+('0'+s).slice(-2);
+}
+
+function seekAudio(e){
+  var bar=document.getElementById('audio-prog');
+  var rect=bar.getBoundingClientRect();
+  prog=Math.round(((e.clientX-rect.left)/rect.width)*100);
+  prog=Math.max(0,Math.min(100,prog));
+  updateProgress(prog);
+}
+
+/* ===== FONT SIZE ===== */
+function cycleFont(){
+  fsIdx=(fsIdx+1)%4;
+  var rb=document.getElementById('reader-body');
+  rb.className='fs-'+fsStates[fsIdx];
+  var lbl=fsLabels[fsIdx];
+  document.getElementById('fs-chip').textContent='ফন্ট: '+lbl;
+  document.getElementById('fs-setting-sub').textContent=lbl;
+}
+
+/* ===== CLOCK ===== */
+function updateClock(){
+  var d=new Date();
+  var h=d.getHours(),m=d.getMinutes();
+  var ampm=h>=12?'PM':'AM';
+  h=h%12||12;
+  var t=h+':'+(m<10?'0'+m:m)+' '+ampm;
+  var el=document.getElementById('clock-time');
+  if(el)el.textContent=t;
+  var el2=document.getElementById('clock2');
+  if(el2)el2.textContent=t;
+}
+setInterval(updateClock,10000);
+updateClock();
+
+/* ===== GREETING ===== */
+function setGreeting(){
+  var h=new Date().getHours();
+  var g='আস-সালামু আলাইকুম';
+  if(h>=5&&h<12)g='সুপ্রভাত • শুভ ফজর';
+  else if(h>=12&&h<15)g='শুভ দুপুর • শুভ যোহর';
+  else if(h>=15&&h<18)g='শুভ বিকাল • শুভ আসর';
+  else if(h>=18&&h<20)g='শুভ সন্ধ্যা • শুভ মাগরিব';
+  else g='শুভ রাত্রি • শুভ ইশা';
+  var el=document.getElementById('greeting-txt');
+  if(el)el.textContent=g;
+}
+setGreeting();
+
+/* ===== INIT ===== */
+buildHomeSurahPreview();
+buildFullSurahList();
+buildAyahList();
+buildQariList();
+
+/* ===== SPLASH ===== */
+setTimeout(function(){
+  var s=document.getElementById('splash');
+  s.style.opacity='0';
+  s.style['-webkit-transition']='opacity .5s';
+  s.style.transition='opacity .5s';
+  setTimeout(function(){s.style.display='none';},500);
+},2000);
+</script>
+</body>
+</html>
